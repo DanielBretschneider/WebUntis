@@ -13,6 +13,8 @@ id = 365
 #printTeacher(session)
 #printSchoolyears(session)
 #printSubstitutions(session)
-printTimetable(session, id)
+#printTimetable(session, id)
+
+print (getSubstitutions(session))
 
 logout()
