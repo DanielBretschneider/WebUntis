@@ -15,7 +15,7 @@ import WebUntisData
 WEBUNTIS_SESSION = WebUntisData.getSession()
 
 # teacher email-addresses
-teachers = WebUntisData.getTeacher(WEBUNTIS_SESSION)
+teachers = WebUntisData.getTeacher_shortname()
 
 # Sender Email-Adress
 sender = secret.gmail_sender
@@ -35,6 +35,9 @@ LOGFILE = "log/WEBUNTIS_LOG.log"
 
 # End of line
 EOL = "\n"
+
+# Change occured
+CHANG_OCCURED = False
 
 class notification:
     def __init__(self, email, password):
@@ -107,23 +110,29 @@ def check_for_changes():
 
     :return: TRUE, if change in the WebUntis has occured; None if nothing happend;
     """
+    teacherlist = ['KOR']
 
+    for teacher in teacherlist:
+        substitutions = WebUntisData.getSubstitutionForSpecificTeacher(teacher)
+        numSubstitutions = len(substitutions)
+        if numSubstitutions == 0:
+            CHANG_OCCURED = False
+        elif numSubstitutions > 0:
+            CHANG_OCCURED = True
+            message = WebUntisData.printSubstitutionForSpecificTeacher(teacher)
+            notify(message)
 
-
-def create_receiver_list():
-    """
-    create_receiver_list(): creates a list, including all teachers who are concerned of the change
-    :return:
-    """
-
-def notificate():
+def notify(msg):
     """
     notificate(): method to send out the change-information.
     :return:
     """
-    msg = notification(secret.gmail_sender, secret.gmail_passwd)
-    notification.send_notification(msg, receivers, "Automatic WebUntis Change Notification", "This is a test.")
-#   notification.send_notification(msg, copyReceivers, "Test", "This is a test.")
+    mail = notification(secret.gmail_sender, secret.gmail_passwd)
+    notification.send_notification(mail, receivers, "Automatic WebUntis Change Notification", msg)
+    #notification.send_notification(msg, copyReceivers, "Automatic WebUntis Change Notification", msg)
+    print(msg)
+
+check_for_changes()
 
 # close WebUntis session
 WebUntisData.logout()

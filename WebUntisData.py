@@ -29,7 +29,7 @@ def getSession():
 
 def printDepartments():
     """
-    printDepartments(session): prints all departments inside the school.
+    printDepartments(): prints all departments inside the school.
     """
     print ("\n---> departments")
 
@@ -39,7 +39,7 @@ def printDepartments():
 
 def getDepartments():
     """
-    getDepartments(session): returns all departments.
+    getDepartments(): returns all departments.
     """
     departments = []
 
@@ -51,7 +51,7 @@ def getDepartments():
 
 def printRooms():
     """
-    printRooms(session): prints all departments inside the school.
+    printRooms(): prints all departments inside the school.
     """
     print ("\n---> rooms")
 
@@ -61,7 +61,7 @@ def printRooms():
 
 def getRooms():
     """
-    getRooms(session): returns all rooms.
+    getRooms(): returns all rooms.
     """
     rooms = []
 
@@ -73,7 +73,7 @@ def getRooms():
 
 def printHolidays():
     """
-    printHolidays(session): prints all the holidays, that occur.
+    printHolidays(): prints all the holidays, that occur.
     """
     print ("\n---> holidays")
 
@@ -83,7 +83,7 @@ def printHolidays():
 
 def getHolidays():
     """
-    getHolidays(session): returns all holidays.
+    getHolidays(): returns all holidays.
     """
     holidays = []
 
@@ -96,7 +96,7 @@ def getHolidays():
 
 def printClasses():
     """
-    printClasses(session): prints out all the available classes of the school. (short_name + name)
+    printClasses(): prints out all the available classes of the school. (short_name + name)
     """
     print ("\n---> klassen")
 
@@ -106,7 +106,7 @@ def printClasses():
 
 def getClasses():
     """
-    getClasses(session): returns all classes.
+    getClasses(): returns all classes.
     """
     classes = []
 
@@ -118,7 +118,7 @@ def getClasses():
 
 def printSubjects():
     """
-    printSubjects(session): prints all departments inside the school.
+    printSubjects(): prints all departments inside the school.
     """
     print ("\n---> subjects")
 
@@ -127,7 +127,7 @@ def printSubjects():
 
 def getSubjects():
     """
-    getSubjects(session): returns all subjects.
+    getSubjects(): returns all subjects.
     """
     subjects = []
 
@@ -139,14 +139,26 @@ def getSubjects():
 
 def printTeacher():
     """
-    printSubjects(session): prints all departments inside the school.
+    printSubjects(): prints all departments inside the school.
     """
     print ("\n---> teacher")
 
     for teacher in session.teachers():
         print("id: %d, name: %s, long_name: %s" % (teacher.id, teacher.name, teacher.long_name))
 
-def getTeacher():
+def getTeachers():
+    """
+    getTeachers(session): returns all teacher.
+    """
+    teacher = []
+
+    for t in session.teachers():
+        t = (teacher.id, teacher.name, teacher.long_name)
+        teacher.append(t)
+
+    return teacher
+
+def getTeacher_shortname():
     """
     getTeacher(session): returns all teacher.
     """
@@ -218,9 +230,9 @@ def printSubstitutions():
         else :
             print("start: %s, end: %s, type: %s" % (substitute.reschedule_start, substitute.reschedule_end, substitute.type()))
 
-def getSubstitutionForSpecificTeacher(teachername):
+def printSubstitutionForSpecificTeacher(teachername):
     """
-    getSubstitutionsForSpecificTeacher(): returns any changes of specific timetables
+    printSubstitutionsForSpecificTeacher(): returns any changes of specific timetables
     """
     lehrername=teachername
     start = datetime.date.today()
@@ -247,14 +259,64 @@ def getSubstitutionForSpecificTeacher(teachername):
                 res += gegst + " / "
                 res += klassen + " / "
                 res += period.code + EOL
-    print(res)
+    #print(res)
+    return res
+
+def getSubstitutionForSpecificTeacher(teachername):
+    """
+    getSubstitutionsForSpecificTeacher(): returns any changes of specific timetables
+    """
+    lehrername=teachername
+    start = datetime.date.today()
+    end = start + datetime.timedelta(days=14)
+
+    lehrer = session.teachers().filter(name=lehrername)[0]
+    table = session.timetable(teacher=lehrer, start=start, end=end).to_table()
+
+    res = ""
+    EOL = "\n"
+    substitutionlist = []
+
+    for time, row in table:
+       timetext = '{}'.format(time.strftime('%H:%M'))
+       for date, cell in row:
+          for period in cell:
+            if period.code:
+                klassen = ', '.join(cls.name for cls in period.klassen)
+                gegst = ', '.join(su.name for su in period.subjects)
+                res += str(date) + " " + str(timetext) +  ": "
+                res += gegst + " / "
+                res += klassen + " / "
+                res += period.code + EOL
+
+    substitutionlist = res.split("\n")
+    substitutionlist = filter(None, substitutionlist)
+    return substitutionlist
+
+def checkForSubstitutions():
+    """
+    checkForSubstitutions(): prints out every teacher with number ofsubstitions.
+    :return:
+    """
+    teacherlist = getTeacher_shortname()
+
+    for teacher in teacherlist:
+        lst = getSubstitutionForSpecificTeacher(teacher)
+        numOfSubstitutions = len(lst)
+        if numOfSubstitutions == 1:
+            print("'%s' has %d substitution!" % (teacher, numOfSubstitutions))
+        elif numOfSubstitutions > 1:
+            print("'%s' has %d substitutions!" % (teacher, numOfSubstitutions))
+        else:
+            print("'%s' has no substitutions!" % (teacher))
 
 def printAllSubstitutions():
     """
     printAllSubstitutions(): Prints out all Substitutions of every teacher in the next two weeks. (test)
     :return:
     """
-    allteachers = getTeacher()
+    allteachers = getTeacher_shortname()
 
     for t in allteachers:
         print(getSubstitutionForSpecificTeacher(t))
+

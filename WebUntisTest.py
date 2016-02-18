@@ -22,6 +22,10 @@ id = 365
 #printTimetable(id)
 #print(getSubstitutions())
 #WebUntisData.printAllSubstitutions()
-WebUntisData.getSubstitutionForSpecificTeacher("BRE")
+x = WebUntisData.getSubstitutionForSpecificTeacher("KOR")
+
+print(WebUntisData.printSubstitutionForSpecificTeacher("KOR"))
+
+#WebUntisData.checkForSubstitutions()
 
 WebUntis_Session.close_session(session)
