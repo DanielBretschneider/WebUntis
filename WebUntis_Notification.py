@@ -14,8 +14,37 @@ import WebUntisData
 # WebUntis Session opening
 WEBUNTIS_SESSION = WebUntisData.getSession()
 
+# teacher email-addresses
+teachers = WebUntisData.getTeacher(WEBUNTIS_SESSION)
+
+# Sender Email-Adress
+sender = secret.gmail_sender
+
+# Receiver
+receivers = ['dani.bretschneider@gmail.com']
+copyReceivers = ['hor@htl.rennweg.at', 'bre@htl.rennweg.at']
+
+# message content
+message = ""
+
+# email suffix
+suffix = "@htl.rennweg.at"
+
+# file which saves all already sent change-information
+LOGFILE = "log/WEBUNTIS_LOG.log"
+
+# End of line
+EOL = "\n"
+
 class notification:
     def __init__(self, email, password):
+        """
+        __init__(): classic constructor.
+
+        :param email:
+        :param password:
+        :return:
+        """
         self.email = email
         self.password = password
         self.server = 'smtp.gmail.com'
@@ -28,7 +57,14 @@ class notification:
         self.session = session
 
     def send_message(self, receiver, subject, body):
-        ''' This must be removed '''
+        """
+        send_message: sends the email.
+
+        :param receiver: list of teachers
+        :param subject: WebUntis Change-Notification
+        :param body: date of change, class and classroom, kind of change (substitution, cancel, shift)
+        :return: None.
+        """
         headers = [
             "From: " + self.email,
             "Subject: " + subject,
@@ -44,6 +80,8 @@ class notification:
     def send_notification(self, receiver, subject, content):
         """
         send_notification: Sends the message to the concerning teachers.
+
+        :return:
         """
 
         try:
@@ -52,38 +90,40 @@ class notification:
         except:
             print "Error: unable to send email"
 
-def change_occured():
+def log(receivers, content):
     """
+    log(): saves already sent info-mails.
+
+    :param receivers:
+    :param content:
+    :return:
+    """
+    with open(LOGFILE, "w") as logfile:
+        logfile.write("Mail sent to {REC} {newline} with content:{newline}{CONT}".format(REC=receivers, newline=EOL, CONT=content))
+
+def check_for_changes():
+    """
+    change_occured: responsible for the recognition of webuntis changes. TODO: AGAIN!
 
     :return: TRUE, if change in the WebUntis has occured; None if nothing happend;
     """
-    substitutions = WebUntisData.getSubstitutions(WEBUNTIS_SESSION)
-    num_substitutions = len(substitutions)
-    for sub in substitutions:
-        print(sub)
+
+
 
 def create_receiver_list():
     """
     create_receiver_list(): creates a list, including all teachers who are concerned of the change
+    :return:
     """
 
-# teacher email-addresses
-teachers = WebUntisData.getTeacher(WEBUNTIS_SESSION)
-
-# Sender Email-Adress
-sender = secret.gmail_sender
-
-# Receiver
-receivers = ['dani.bretschneider@gmail.com']
-
-# message content
-message = ""
-
-# End of line
-EOL = "\n"
-
-msg = notification(secret.gmail_sender, secret.gmail_passwd)
-notification.send_notification(msg, receivers, "Test", "This is a test.")
+def notificate():
+    """
+    notificate(): method to send out the change-information.
+    :return:
+    """
+    msg = notification(secret.gmail_sender, secret.gmail_passwd)
+    notification.send_notification(msg, receivers, "Automatic WebUntis Change Notification", "This is a test.")
+#   notification.send_notification(msg, copyReceivers, "Test", "This is a test.")
 
 # close WebUntis session
 WebUntisData.logout()

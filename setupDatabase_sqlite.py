@@ -2,10 +2,11 @@
 __author__ = 'Daniel Bretschneider'
 
 import sqlite3
-from WebUntisData import *
+import WebUntis_Session
+import WebUntisData
 
 # WebUntis session
-session = getSession()
+session = WebUntis_Session.open_session()
 
 # name of the database / database file
 n_database = "WebUntisData.db"
@@ -14,15 +15,12 @@ n_database = "WebUntisData.db"
 conn = sqlite3.connect(n_database)
 print("Opened database successfully")
 
-"""
-execute(statement) - executes sqlite-statement
-"""
 def execute(statement):
+    """
+    execute(statement): executes sqlite-statement
+    """
     conn.execute(statement)
 
-"""
-CREATE commands for the tables inside the database
-"""
 # create table for classes
 create_t_classes = "CREATE TABLE IF NOT EXISTS classes(" \
                    "ID              INTEGER PRIMARY KEY AUTOINCREMENT," \
@@ -72,24 +70,21 @@ create_t_substitutions =  "CREATE TABLE IF NOT EXISTS substitutions(" \
                           "START     VARCHAR(50) NOT NULL," \
                           "END       VARCHAR(50) NOT NULL);"
 
-"""
-FUNCTIONS for the data delivery
-"""
 
-"""
-loadClasses() - load all classes into database
-"""
 def loadClasses():
+    """
+    loadClasses(): load all classes into database
+    """
     classes = getClasses(session)
 
     for classes in classes:
         ins_classes =  "INSERT INTO classes(ID, SHORT_NAME, LONG_NAME) VALUES(%4d, '%-5s', '%s');" % (classes[0], classes[1], classes[2])
         execute(ins_classes)
 
-"""
-loadDepartments() - load all departements into database
-"""
 def loadDepartments():
+    """
+    loadDepartments(): load all departements into database
+    """
     departments = getDepartments(session)
 
     for dep in departments:
@@ -97,10 +92,10 @@ def loadDepartments():
                           "VALUES(%d, '%-5s', '%s');" % (dep[0], dep[1], dep[2])
         execute(ins_departments)
 
-"""
-loadRooms() - load all rooms into database
-"""
 def loadRooms():
+    """
+    loadRooms(): load all rooms into database
+    """
     rooms = getRooms(session)
 
     for room in rooms:
@@ -108,10 +103,10 @@ def loadRooms():
                           "VALUES(%d, '%-5s', '%s');" % (room[0], room[1], room[2])
         execute(ins_rooms)
 
-"""
-loadSubjects() - load all subjects into database
-"""
 def loadSubjects():
+    """
+    loadSubjects(): load all subjects into database
+    """
     subjects = getSubjects(session)
 
     for subj in subjects:
@@ -119,10 +114,10 @@ def loadSubjects():
                           "VALUES(%d, '%-5s', '%s');" % (subj[0], subj[1], subj[2])
         execute(ins_subjects)
 
-"""
-loadTeacher() - load all teacher into database
-"""
 def loadTeacher():
+    """
+    loadTeacher(): load all teacher into database
+    """
     teacher = getTeacher(session)
 
     for t in teacher:
@@ -130,10 +125,10 @@ def loadTeacher():
                           "VALUES(%d, '%-5s', '%s');" % (t[0], t[1], t[2])
         execute(ins_teacher)
 
-"""
-loadSchoolyears() - load all schoolyears into database
-"""
 def loadSchoolyears():
+    """
+    loadSchoolyears(): load all schoolyears into database
+    """
     schoolyears = getSchoolyears(session)
 
     for sy in schoolyears:
@@ -141,10 +136,11 @@ def loadSchoolyears():
                           "VALUES(%d, '%s');" % (sy[0], sy[1])
         execute(ins_schoolyears)
 
-"""
-loadHolidays() - load all holidays into database
-"""
+
 def loadHolidays():
+    """
+    loadHolidays(): load all holidays into database
+    """
     holidays = getHolidays(session)
 
     for holiday in holidays:
@@ -152,10 +148,6 @@ def loadHolidays():
                           "VALUES(%4d, '%s', '%s', '%s', '%s');" % (holiday[0], holiday[1], holiday[2], holiday[3], holiday[4])
         execute(ins_holidays)
 
-
-"""
-SECTION to create the several tables
-"""
 execute(create_t_classes)
 execute(create_t_department)
 execute(create_t_holidays)
@@ -180,3 +172,4 @@ loadHolidays()
 # close connection to database
 conn.commit()
 conn.close()
+WebUntis_Session.close_session()
