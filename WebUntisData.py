@@ -246,7 +246,7 @@ def printSubstitutionForSpecificTeacher(teachername):
     res = ""
     res += "teacher: " + lehrername + EOL
     res += "start  : " + str(start) + EOL
-    res += "end    : " + str(end) + EOL
+    res += "end    : " + str(end) + EOL*2
 
     for time, row in table:
        timetext = '{}'.format(time.strftime('%H:%M'))

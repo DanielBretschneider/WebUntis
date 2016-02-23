@@ -10,6 +10,9 @@ __status__ = "(More or less) Finished."
 import smtplib
 import secret
 import WebUntisData
+import logging
+import os
+from datetime import datetime
 
 # WebUntis Session opening
 WEBUNTIS_SESSION = WebUntisData.getSession()
@@ -30,8 +33,12 @@ message = ""
 # email suffix
 suffix = "@htl.rennweg.at"
 
-# file which saves all already sent change-information
-LOGFILE = "log/WEBUNTIS_LOG.log"
+# logging
+LOGFILE = ".log/WEBUNTIS_LOG.LOG"
+logging.basicConfig(filename=LOGFILE, level=logging.INFO)
+
+# Caching
+CACHEFILE = ".cache/CACHEFILE.CACHE"
 
 # End of line
 EOL = "\n"
@@ -42,7 +49,7 @@ CHANG_OCCURED = False
 class notification:
     def __init__(self, email, password):
         """
-        __init__(): classic constructor.
+        __init__(): classic constructor
 
         :param email:
         :param password:
@@ -58,6 +65,7 @@ class notification:
         session.ehlo
         session.login(self.email, self.password)
         self.session = session
+        logging.info(str(datetime.now()) + " :: Initialized SMTP Server, Logon successful.")
 
     def send_message(self, receiver, subject, body):
         """
@@ -89,20 +97,11 @@ class notification:
 
         try:
             self.send_message(receivers, subject, content)
+            logging.info(str(datetime.now()) + " :: Notification successfully sent %s {from: %s, to: %s}" % (EOL, sender, receivers))
             print "Notification successfully sent %s {from: %s, to: %s}" % (EOL, sender, receivers)
         except:
+            logging.warn(str(datetime.now()) + " :: Error occurred: Unable to send email")
             print "Error: unable to send email"
-
-def log(receivers, content):
-    """
-    log(): saves already sent info-mails.
-
-    :param receivers:
-    :param content:
-    :return:
-    """
-    with open(LOGFILE, "w") as logfile:
-        logfile.write("Mail sent to {REC} {newline} with content:{newline}{CONT}".format(REC=receivers, newline=EOL, CONT=content))
 
 def check_for_changes():
     """
@@ -110,7 +109,8 @@ def check_for_changes():
 
     :return: TRUE, if change in the WebUntis has occured; None if nothing happend;
     """
-    teacherlist = ['KOR']
+    # Normally variable 'teachers' will be used instead of 'teacherlist' - just for testing.
+    teacherlist = ['BRE']
 
     for teacher in teacherlist:
         substitutions = WebUntisData.getSubstitutionForSpecificTeacher(teacher)
@@ -122,17 +122,66 @@ def check_for_changes():
             message = WebUntisData.printSubstitutionForSpecificTeacher(teacher)
             notify(message)
 
+def format_content(lst):
+    """
+
+    :return:
+    """
+    c=0
+    lst = lst[4:]
+    lst[-1]
+    return lst
+
+def cache(txt):
+    """
+    cache(): saves already sent information, to prevent redundant mails.
+    :param txt: email-content; substitutions
+    :return: nothing
+    """
+    entry = format_content(txt.split(EOL))
+    print entry
+    """
+    if os.path.exists(CACHEFILE):
+        with open(CACHEFILE, "w") as f:
+            f.write(txt.split(EOL))
+            print(format_content(txt.split(EOL)))
+            #logging.info(str(datetime.now()) + " :: CACHED into ./cache/CACHEFILE.CACHE: %s%s" % (EOL, txt))
+    """"
+def unified_subject_extension():
+    """
+    unified_subject_extension(): This method generates a unfied extension, which will be added to the original subject.
+                                 Because many email clients tend to group emails with the same subject...
+    :return: something unique
+    """
+    time = datetime.now()
+    day = str(time.day)
+    month = str(time.month)
+    year = str(time.year)
+
+    extension = "%s-%s-%s" % (day, month, year)
+
+    return extension
+
+
 def notify(msg):
     """
     notificate(): method to send out the change-information.
     :return:
     """
+    # subejct
+    subject = "Supplierung - " + unified_subject_extension()
+
+    # setup mail server
     mail = notification(secret.gmail_sender, secret.gmail_passwd)
-    notification.send_notification(mail, receivers, "Automatic WebUntis Change Notification", msg)
-    #notification.send_notification(msg, copyReceivers, "Automatic WebUntis Change Notification", msg)
-    print(msg)
+#    notification.send_notification(mail, receivers, subject, msg)
+    cache(msg)
+#   notification.send_notification(msg, copyReceivers, subject+" (Copy)", msg)
+    #print(msg)
 
 check_for_changes()
 
 # close WebUntis session
 WebUntisData.logout()
+
+# daily checks
+# 07:50 / 08:30 / 10:05 / 14:00 / 18:00
