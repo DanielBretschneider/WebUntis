@@ -4,7 +4,7 @@
 __author__ = "Daniel Bretschneider"
 __version__ = "1.0.1"
 __email__ = "dani.bretschneider@gmail.com"
-__status__ = "(More or less) Finished."
+__status__ = "Finished"
 """
 
 import webuntis

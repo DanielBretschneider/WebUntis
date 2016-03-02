@@ -4,7 +4,7 @@
 __author__ = "Daniel Bretschneider"
 __version__ = "1.0.1"
 __email__ = "dani.bretschneider@gmail.com"
-__status__ = "(More or less) Finished."
+__status__ = "no status, just a test file."
 """
 import WebUntis_Session
 import WebUntisData
@@ -16,16 +16,17 @@ id = 365
 #printDepartments()
 #printRooms()
 #printSubjects()
-#printTeacher()
+WebUntisData.printTeacher()
 #printSchoolyears()
 #printSubstitutions()
 #printTimetable(id)
 #print(getSubstitutions())
+#print(WebUntisData.getClasses())
 #WebUntisData.printAllSubstitutions()
 #x = WebUntisData.getSubstitutionForSpecificTeacher("KOR")
 
 #print(WebUntisData.printSubstitutionForSpecificTeacher("KOR"))
-WebUntisData.printAllSubstitutions()
+#WebUntisData.printAllSubstitutions()
 #WebUntisData.checkForSubstitutions()
 
 WebUntis_Session.close_session(session)

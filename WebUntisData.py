@@ -4,7 +4,7 @@
 __author__ = "Daniel Bretschneider"
 __version__ = "1.0.1"
 __email__ = "dani.bretschneider@gmail.com"
-__status__ = "(More or less) Finished."
+__status__ = "Finished"
 """
 
 from datetime import date
@@ -153,8 +153,8 @@ def getTeachers():
     teacher = []
 
     for t in session.teachers():
-        t = (teacher.id, teacher.name, teacher.long_name)
-        teacher.append(t)
+        tf = (t.id, t.name, t.long_name)
+        teacher.append(tf)
 
     return teacher
 

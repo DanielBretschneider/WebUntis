@@ -9,7 +9,7 @@ import WebUntisData
 session = WebUntis_Session.open_session()
 
 # name of the database / database file
-n_database = "WebUntisData.db"
+n_database = "WebUntis.db"
 
 # create or open database
 conn = sqlite3.connect(n_database)
@@ -75,7 +75,7 @@ def loadClasses():
     """
     loadClasses(): load all classes into database
     """
-    classes = getClasses(session)
+    classes = WebUntisData.getClasses()
 
     for classes in classes:
         ins_classes =  "INSERT INTO classes(ID, SHORT_NAME, LONG_NAME) VALUES(%4d, '%-5s', '%s');" % (classes[0], classes[1], classes[2])
@@ -85,7 +85,7 @@ def loadDepartments():
     """
     loadDepartments(): load all departements into database
     """
-    departments = getDepartments(session)
+    departments = WebUntisData.getDepartments()
 
     for dep in departments:
         ins_departments = "INSERT INTO departments(ID, SHORT_NAME, LONG_NAME) " \
@@ -96,7 +96,7 @@ def loadRooms():
     """
     loadRooms(): load all rooms into database
     """
-    rooms = getRooms(session)
+    rooms = WebUntisData.getRooms()
 
     for room in rooms:
         ins_rooms = "INSERT INTO rooms(ID, SHORT_NAME, LONG_NAME) " \
@@ -107,7 +107,7 @@ def loadSubjects():
     """
     loadSubjects(): load all subjects into database
     """
-    subjects = getSubjects(session)
+    subjects = WebUntisData.getSubjects()
 
     for subj in subjects:
         ins_subjects = "INSERT INTO subjects(ID, SHORT_NAME, LONG_NAME) " \
@@ -118,7 +118,7 @@ def loadTeacher():
     """
     loadTeacher(): load all teacher into database
     """
-    teacher = getTeacher(session)
+    teacher = WebUntisData.getTeachers()
 
     for t in teacher:
         ins_teacher = "INSERT INTO teacher(ID, SHORT_NAME, LONG_NAME) " \
@@ -129,7 +129,7 @@ def loadSchoolyears():
     """
     loadSchoolyears(): load all schoolyears into database
     """
-    schoolyears = getSchoolyears(session)
+    schoolyears = WebUntisData.getSchoolyears()
 
     for sy in schoolyears:
         ins_schoolyears = "INSERT INTO schoolyears(ID, NAME) " \
@@ -141,7 +141,7 @@ def loadHolidays():
     """
     loadHolidays(): load all holidays into database
     """
-    holidays = getHolidays(session)
+    holidays = WebUntisData.getHolidays()
 
     for holiday in holidays:
         ins_holidays = "INSERT INTO holidays(ID, START, END, NAME, SHORT_NAME) " \
@@ -172,4 +172,4 @@ loadHolidays()
 # close connection to database
 conn.commit()
 conn.close()
-WebUntis_Session.close_session()
+WebUntis_Session.close_session(session)

@@ -105,7 +105,7 @@ class notification:
 
 def check_for_changes():
     """
-    change_occured: responsible for the recognition of webuntis changes. TODO: AGAIN!
+    change_occured: responsible for the recognition of webuntis changes.
 
     :return: TRUE, if change in the WebUntis has occured; None if nothing happend;
     """
@@ -139,14 +139,14 @@ def cache(txt):
     :return: nothing
     """
     entry = format_content(txt.split(EOL))
-    print entry
-    """
+
     if os.path.exists(CACHEFILE):
-        with open(CACHEFILE, "w") as f:
-            f.write(txt.split(EOL))
-            print(format_content(txt.split(EOL)))
-            #logging.info(str(datetime.now()) + " :: CACHED into ./cache/CACHEFILE.CACHE: %s%s" % (EOL, txt))
-    """"
+        with open(CACHEFILE, "a") as f:
+            for line in entry:
+                f.write(line+EOL)
+                logging.info(str(datetime.now()) + " :: CACHED into ./cache/CACHEFILE.CACHE: %s%s%s" % (EOL, line, EOL))
+
+
 def unified_subject_extension():
     """
     unified_subject_extension(): This method generates a unfied extension, which will be added to the original subject.
@@ -175,10 +175,21 @@ def notify(msg):
     mail = notification(secret.gmail_sender, secret.gmail_passwd)
 #    notification.send_notification(mail, receivers, subject, msg)
     cache(msg)
+    print(msg)
 #   notification.send_notification(msg, copyReceivers, subject+" (Copy)", msg)
     #print(msg)
 
-check_for_changes()
+def job():
+    """
+    Job(): executes the program
+    :return:
+    """
+    check_for_changes()
+
+#
+# START OF SCRIPT
+#
+job()
 
 # close WebUntis session
 WebUntisData.logout()
