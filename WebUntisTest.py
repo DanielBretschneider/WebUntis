@@ -6,8 +6,16 @@ __version__ = "1.0.1"
 __email__ = "dani.bretschneider@gmail.com"
 __status__ = "no status, just a test file."
 """
+
+#
+# This is just a testing-file and is not a relevant script of our diploma project.
+#
+
 import WebUntis_Session
 import WebUntisData
+import datetime
+import json
+import re
 
 session = WebUntis_Session.open_session()
 id = 365
@@ -16,7 +24,7 @@ id = 365
 #printDepartments()
 #printRooms()
 #printSubjects()
-WebUntisData.printTeacher()
+print(WebUntisData.getTeacherID("BRE"))
 #printSchoolyears()
 #printSubstitutions()
 #printTimetable(id)

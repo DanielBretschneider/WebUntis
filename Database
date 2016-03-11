@@ -8,14 +8,13 @@ __status__ = "started"
 """
 
 #
-# This is a special program. Goal is to successfully display the timetable of our head of department Mr. Hager, as an html table.
-# For the beginning. Next a database has to be created, so that the real data can be stored and managed, and later on displayed on
-# the EPaper-Display in front of his room.
+# Creates the database, including every teacher with his timetable.
 #
 
 import WebUntis_Session
 import WebUntisData
 import datetime
+import os
 import sqlite3
 
 # WebUntis Session opening
@@ -24,23 +23,20 @@ WEBUNTIS_SESSION = WebUntisData.getSession()
 # List of all teachers of our school (as shortname, f.e. HAG)
 TEACHERS = WebUntisData.getTeacher_shortname()
 
-# Specific teacher id [38: HAG]
-TEACHER_ID = 38
-
 # newline
 EOL = "\n"
 
-# database filename
-DATABASE = "headOfDepartment.db"
+# database filename - and check if file exists
+# if file exists, delete it
+DATABASE = "untis.db"
+
+# connect to database
 CONNECTION = sqlite3.connect(DATABASE)
 
 # todays date and monday+friday of the current week
 today = datetime.date.today()
 monday = today - datetime.timedelta(days=today.weekday())
 friday = monday + datetime.timedelta(days=4)
-
-# Create a timetable with type_id 2 (teacher) and teacher_id 38
-table = WEBUNTIS_SESSION.timetable(teacher=TEACHER_ID, start=monday, end=friday).to_table()
 
 def print_html_table():
     """
@@ -63,7 +59,7 @@ def print_html_table():
         print('</tr>')
     print('</tbody></table>')
 
-def get_timetable_data():
+def get_timetable_data(table):
     """
     get_timetable_data(): get Hagers timetable data for the storing inside his database.
     :return:
@@ -94,12 +90,14 @@ def print_data_formatted():
     for line in get_timetable_data():
         print line
 
-def create_database():
+def createDatabase():
     """
     create_database(): Creates the sqlite database and stores the information in it.
     :return:
     """
     # create or open database
+    if (os.path.exists(DATABASE)):
+        os.remove(DATABASE)
     print("Opened database successfully")
 
 def execute(statement):
@@ -108,41 +106,42 @@ def execute(statement):
     """
     CONNECTION.execute(statement)
 
-def fill_database():
-    """
-    fill_database(): Fill information in database
-    :return:
-    """
+def createTeacherTables():
+    for teacher in TEACHERS:
+        create_t_timetable="CREATE TABLE IF NOT EXISTS t_" + teacher + " (" \
+        "ID              INTEGER PRIMARY KEY AUTOINCREMENT," \
+        "Date            VARCHAR(20) NOT NULL," \
+        "Time            VARCHAR(10) NOT NULL," \
+        "Subject         VARCHAR(10) NOT NULL," \
+        "Class           VARCHAR(10) NOT NULL," \
+        "Room            VARCHAR(10) NOT NULL," \
+        "Substitution    VARCHAR(10) NOT NULL);"
+        execute(create_t_timetable)
+
+def fillTables():
     counter=0
-    for d in get_timetable_data():
-        counter+=1
-        splitted=d.split(";")
-        if len(splitted) is 1:
-            break
-        ins_schoolyears = "INSERT INTO timetable(ID, Date, Time, Subject, Class, Room, Substitution) " \
-                          "VALUES(%d,'%s','%s','%s','%s','%s','%s');" % (counter, splitted[0], splitted[1],splitted[2],splitted[3],splitted[4], "No")
-        execute(ins_schoolyears)
+    for te in TEACHERS:
+        id = WebUntisData.getTeacherID(te)
+        print(u""+te+":"+str(id))
+        table = WEBUNTIS_SESSION.timetable(teacher=id, start=monday, end=friday).to_table()
+
+        for d in get_timetable_data(table):
+            counter+=1
+            splitted=d.split(";")
+            if len(splitted) is 1:
+                break
+            insertCMD = "INSERT INTO t_%s(ID, Date, Time, Subject, Class, Room, Substitution) " \
+                        "VALUES(%d,'%s','%s','%s','%s','%s','%s');" % (te, counter, splitted[0], splitted[1],splitted[2],splitted[3],splitted[4], "No")
+            execute(insertCMD)
+
+
 
 #
 # Program Sequence
 #
-create_database()
-
-# create table for Mr. Hager
-create_t_timetable="CREATE TABLE IF NOT EXISTS timetable(" \
-                   "ID              INTEGER PRIMARY KEY AUTOINCREMENT," \
-                   "Date            VARCHAR(20) NOT NULL," \
-                   "Time            VARCHAR(10) NOT NULL," \
-                   "Subject         VARCHAR(10) NOT NULL," \
-                   "Class           VARCHAR(10) NOT NULL," \
-                   "Room            VARCHAR(10) NOT NULL," \
-                   "Substitution    VARCHAR(10) NOT NULL);" \
-
-# create table inside our database
-execute(create_t_timetable)
-
-# Fill DB.
-fill_database()
+createDatabase()
+createTeacherTables()
+fillTables()
 
 # Close all sessions.
 CONNECTION.commit()

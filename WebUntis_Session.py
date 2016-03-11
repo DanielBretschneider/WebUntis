@@ -7,6 +7,10 @@ __email__ = "dani.bretschneider@gmail.com"
 __status__ = "Finished"
 """
 
+#
+# This file specifies the interface to the webuntis database, which will be used everytime data will be requested.
+#
+
 import webuntis
 
 # WebUntis Session Object

@@ -7,6 +7,10 @@ __email__ = "dani.bretschneider@gmail.com"
 __status__ = "Finished"
 """
 
+#
+# Here is a collection of query-methods, mostly used for database creation.
+#
+
 from datetime import date
 import webuntis
 import datetime
@@ -148,7 +152,7 @@ def printTeacher():
 
 def getTeachers():
     """
-    getTeachers(session): returns all teacher.
+    getTeachers(): returns all teacher.
     """
     teacher = []
 
@@ -160,7 +164,7 @@ def getTeachers():
 
 def getTeacher_shortname():
     """
-    getTeacher(session): returns all teacher.
+    getTeacher(): returns all teacher.
     """
     teacher = []
 
@@ -169,6 +173,15 @@ def getTeacher_shortname():
         teacher.append(t)
 
     return teacher
+
+def getTeacherID(shortname):
+    """
+    getTeacherID(): returns all teacher IDs.
+    :return:
+    """
+    for t in session.teachers():
+        if t.name == shortname:
+            return int(t.id)
 
 def printSchoolyears():
     """

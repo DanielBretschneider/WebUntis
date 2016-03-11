@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+# coding: utf8
 
 """
 __author__ = "Daniel Bretschneider"
@@ -6,6 +7,10 @@ __version__ = "1.0.1"
 __email__ = "dani.bretschneider@gmail.com"
 __status__ = "(More or less) Finished."
 """
+
+#
+# This program is responsible for the automatic WebUnits Change Notifications.
+#
 
 import smtplib
 import secret
@@ -24,8 +29,8 @@ teachers = WebUntisData.getTeacher_shortname()
 sender = secret.gmail_sender
 
 # Receiver
-receivers = ['dani.bretschneider@gmail.com']
-copyReceivers = ['hor@htl.rennweg.at', 'bre@htl.rennweg.at']
+receivers = ['dani.bretschneider@gmail.com',  'hor@htl.rennweg.at']
+#copyReceivers = ['hor@htl.rennweg.at', 'bre@htl.rennweg.at']
 
 # message content
 message = ""
@@ -96,9 +101,9 @@ class notification:
         """
 
         try:
-            self.send_message(receivers, subject, content)
+            self.send_message(receiver, subject, content)
             logging.info(str(datetime.now()) + " :: Notification successfully sent %s {from: %s, to: %s}" % (EOL, sender, receivers))
-            print "Notification successfully sent %s {from: %s, to: %s}" % (EOL, sender, receivers)
+            print "Notification successfully ssent %s {from: %s, to: %s}" % (EOL, sender, receivers)
         except:
             logging.warn(str(datetime.now()) + " :: Error occurred: Unable to send email")
             print "Error: unable to send email"
@@ -110,7 +115,7 @@ def check_for_changes():
     :return: TRUE, if change in the WebUntis has occured; None if nothing happend;
     """
     # Normally variable 'teachers' will be used instead of 'teacherlist' - just for testing.
-    teacherlist = ['BRE']
+    teacherlist = ['HOR']
 
     for teacher in teacherlist:
         substitutions = WebUntisData.getSubstitutionForSpecificTeacher(teacher)
@@ -169,27 +174,17 @@ def notify(msg):
     :return:
     """
     # subejct
-    subject = "Supplierung - " + unified_subject_extension()
+    subject = " TIME Change Notification - " + unified_subject_extension()
 
     # setup mail server
     mail = notification(secret.gmail_sender, secret.gmail_passwd)
-#    notification.send_notification(mail, receivers, subject, msg)
-    cache(msg)
+    mail.send_notification(receivers, subject, msg)
+#    cache(msg)
     print(msg)
 #   notification.send_notification(msg, copyReceivers, subject+" (Copy)", msg)
     #print(msg)
 
-def job():
-    """
-    Job(): executes the program
-    :return:
-    """
-    check_for_changes()
-
-#
-# START OF SCRIPT
-#
-job()
+check_for_changes()
 
 # close WebUntis session
 WebUntisData.logout()
