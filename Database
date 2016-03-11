@@ -107,6 +107,10 @@ def execute(statement):
     CONNECTION.execute(statement)
 
 def createTeacherTables():
+    """
+    createTeacherTables(): creates a table in db for every teacher.
+    :return:
+    """
     for teacher in TEACHERS:
         create_t_timetable="CREATE TABLE IF NOT EXISTS t_" + teacher + " (" \
         "ID              INTEGER PRIMARY KEY AUTOINCREMENT," \
@@ -119,6 +123,10 @@ def createTeacherTables():
         execute(create_t_timetable)
 
 def fillTables():
+    """
+    fillTables(): loads timetable in database.
+    :return:
+    """
     counter=0
     for te in TEACHERS:
         id = WebUntisData.getTeacherID(te)
@@ -133,8 +141,6 @@ def fillTables():
             insertCMD = "INSERT INTO t_%s(ID, Date, Time, Subject, Class, Room, Substitution) " \
                         "VALUES(%d,'%s','%s','%s','%s','%s','%s');" % (te, counter, splitted[0], splitted[1],splitted[2],splitted[3],splitted[4], "No")
             execute(insertCMD)
-
-
 
 #
 # Program Sequence
