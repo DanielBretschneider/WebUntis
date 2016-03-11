@@ -30,9 +30,6 @@ EOL = "\n"
 # if file exists, delete it
 DATABASE = "untis.db"
 
-# connect to database
-CONNECTION = sqlite3.connect(DATABASE)
-
 # todays date and monday+friday of the current week
 today = datetime.date.today()
 monday = today - datetime.timedelta(days=today.weekday())
@@ -98,6 +95,7 @@ def createDatabase():
     # create or open database
     if (os.path.exists(DATABASE)):
         os.remove(DATABASE)
+
     print("Opened database successfully")
 
 def execute(statement):
@@ -130,7 +128,7 @@ def fillTables():
     counter=0
     for te in TEACHERS:
         id = WebUntisData.getTeacherID(te)
-        print(u""+te+":"+str(id))
+        print(u"Teacher '"+te+"' with id '"+str(id)+"' :: table created")
         table = WEBUNTIS_SESSION.timetable(teacher=id, start=monday, end=friday).to_table()
 
         for d in get_timetable_data(table):
@@ -146,6 +144,7 @@ def fillTables():
 # Program Sequence
 #
 createDatabase()
+CONNECTION = sqlite3.connect(DATABASE)
 createTeacherTables()
 fillTables()
 
