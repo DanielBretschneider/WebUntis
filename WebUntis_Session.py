@@ -22,7 +22,7 @@ def open_session():
     """
     session = webuntis.Session(
         username='htl3r',
-        password='htl3r',
+        password='xxxx',
         server='https://urania.webuntis.com',
         school='htl3r',
         useragent='Webuntis Test'
