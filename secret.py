@@ -18,4 +18,4 @@ __status__ = "finished"
 
 # Change Notification Sender
 gmail_sender = "time.noreply@gmail.com"
-gmail_passwd = "Time123!"
+gmail_passwd = "XXX"
